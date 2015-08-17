@@ -69,7 +69,8 @@ def render_changesets(ui, repo, changesets, config):
         "{branch}",
         node_template,
         "{date(date, '%Y-%m-%d [%H:%M:%S]')}",
-        "{desc|strip|firstline}",
+    #    "{desc|strip|firstline}",
+        "{desc}",
     ]))
 
     displayer = show_changeset(ui, repo, {'template': template})
