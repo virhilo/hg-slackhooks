@@ -10,8 +10,7 @@ config_group = 'slackhooks'
 Config = namedtuple(
     'HgSlackHooksConfig',
     field_names=[
-        'token',
-        'org_name',
+        'webhook_url',
         'repo_name',
         'commit_url',
         'username',
@@ -21,15 +20,14 @@ Config = namedtuple(
 
 
 def get_config(ui):
-    token = ui.config(config_group, 'token')
-    org_name = ui.config(config_group, 'org_name')
+    webhook_url = ui.config(config_group, 'webhook_url')
     repo_name = ui.config(config_group, 'repo_name', default=None)
     commit_url = ui.config(config_group, 'commit_url', default=None)
     username = ui.config(config_group, 'username', default="mercurial")
     icon_emoji = ui.config(config_group, 'icon_emoji', default=None)
     icon_url = ui.config(config_group, 'icon_url', default=None)
 
-    return Config(token, org_name, repo_name, commit_url, username, icon_emoji,
+    return Config(webhook_url, repo_name, commit_url, username, icon_emoji,
                   icon_url)
 
 
@@ -82,16 +80,13 @@ def render_changesets(ui, repo, changesets, config):
 
 
 def post_message_to_slack(message, config):
-    target_url = "https://{org_name}.slack.com/services/hooks/incoming-webhook?token={token}".format(
-        org_name=config.org_name,
-        token=config.token)
     payload = {
         'text': message,
         'username': config.username,
     }
     payload_optional_key(payload, config, 'icon_url')
     payload_optional_key(payload, config, 'icon_emoji')
-    request = urllib2.Request(target_url, "payload={0}".format(json.dumps(payload)))
+    request = urllib2.Request(config.webhook_url, "payload={0}".format(json.dumps(payload)))
     urllib2.build_opener().open(request)
 
 
