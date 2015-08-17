@@ -32,7 +32,7 @@ def get_config(ui):
 
 
 def pushhook(node, hooktype, url, repo, source, ui, **kwargs):
-    username = url[url.rfind('::')+2:]
+    username = ui.username()
     config = get_config(ui)
 
     changesets = get_changesets(repo, node)
